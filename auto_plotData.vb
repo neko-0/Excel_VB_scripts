@@ -42,7 +42,7 @@ Sub CreateChart(ByRef PlotName As String, ByRef Yunit As String, ByRef vsWhat As
     With chrt
         .ChartType = xlXYScatter
         .ChartArea.Border.LineStyle = xlLineStyleNone
-        .Parent.Name = PlotName
+        .Parent.Name = PlotName & " " & vsWhat
         .HasTitle = True
         .ChartTitle.Text = PlotName & " vs " & vsWhat
 
@@ -74,10 +74,22 @@ Sub VsBias(ByVal sheetLoc As String, ByRef whichChart As String, ByVal index As 
     With chrt
         .SeriesCollection.NewSeries
         .SeriesCollection(index).Name = SensorName
-        .SeriesCollection(index).XValues = "'data'!$H$" & startRange &
-":$H$" & endRange
-        .SeriesCollection(index).Values = "'data'!$" & whichData & "$"
-& startRange & ":$" & whichData & "$" & endRange
+        .SeriesCollection(index).XValues = "'data'!$H$" & startRange & ":$H$" & endRange
+        .SeriesCollection(index).Values = "'data'!$" & whichData & "$" & startRange & ":$" & whichData & "$" & endRange
+    End With
+End Sub
+
+Sub VsGain(ByVal sheetLoc As String, ByRef whichChart As String, ByVal index As Integer, ByVal SensorName As String, ByVal whichData As String, ByVal startRange As Integer, ByVal endRange As Integer)
+
+    Dim sh As Worksheet
+    Dim chrt As Chart
+    Set sh = ActiveWorkbook.Worksheets(sheetLoc)
+    Set chrt = sh.ChartObjects(whichChart).Chart
+    With chrt
+        .SeriesCollection.NewSeries
+        .SeriesCollection(index).Name = SensorName
+        .SeriesCollection(index).XValues = "'data'!$P$" & startRange & ":$P$" & endRange
+        .SeriesCollection(index).Values = "'data'!$" & whichData & "$" & startRange & ":$" & whichData & "$" & endRange
     End With
 End Sub
 
@@ -100,11 +112,26 @@ Sub Plotting()
     Call CreateChart("Rise Time", "[ps]", "Bias", "[V]", "AutoPlots")
     Call CreateChart("Noise", "[mV]", "Bias", "[V]", "AutoPlots")
     Call CreateChart("Jitter", "[ps]", "Bias", "[V]", "AutoPlots")
+    Call CreateChart("Time Resolution", "[ps]", "Bias", "[V]", "AutoPlots")
+
+    Call CreateChart("Pmax", "[mV]", "Gain", "", "AutoPlots")
+    Call CreateChart("Rise Time", "[ps]", "Gain", "", "AutoPlots")
+    Call CreateChart("Noise", "[mV]", "Gain", "", "AutoPlots")
+    Call CreateChart("Jitter", "[ps]", "Gain", "", "AutoPlots")
+    Call CreateChart("Time Resolution", "[ps]", "Gain", "", "AutoPlots")
+
         For i = 0 To 3
-            Call VsBias(OutSheetName, "Pmax", i, DataSetUP(i)(0), "Q", DataSetUP(i)(1), DataSetUP(i)(2))
-            Call VsBias(OutSheetName, "Gain", i, DataSetUP(i)(0), "P", DataSetUP(i)(1), DataSetUP(i)(2))
-            Call VsBias(OutSheetName, "Rise Time", i, DataSetUP(i)(0), "Y", DataSetUP(i)(1), DataSetUP(i)(2))
-            Call VsBias(OutSheetName, "Noise", i, DataSetUP(i)(0), "S", DataSetUP(i)(1), DataSetUP(i)(2))
-            Call VsBias(OutSheetName, "Jitter", i, DataSetUP(i)(0), "AG", DataSetUP(i)(1), DataSetUP(i)(2))
+            Call VsBias(OutSheetName, "Pmax Bias", i, DataSetUP(i)(0), "Q", DataSetUP(i)(1), DataSetUP(i)(2))
+            Call VsBias(OutSheetName, "Gain Bias", i, DataSetUP(i)(0), "P", DataSetUP(i)(1), DataSetUP(i)(2))
+            Call VsBias(OutSheetName, "Rise Time Bias", i, DataSetUP(i)(0), "Y", DataSetUP(i)(1), DataSetUP(i)(2))
+            Call VsBias(OutSheetName, "Noise Bias", i, DataSetUP(i)(0), "S", DataSetUP(i)(1), DataSetUP(i)(2))
+            Call VsBias(OutSheetName, "Jitter Bias", i, DataSetUP(i)(0), "AG", DataSetUP(i)(1), DataSetUP(i)(2))
+            Call VsBias(OutSheetName, "Time Resolution Bias", i, DataSetUP(i)(0), "AG", DataSetUP(i)(1), DataSetUP(i)(2))
+
+            Call VsGain(OutSheetName, "Pmax Gain", i, DataSetUP(i)(0), "Q", DataSetUP(i)(1), DataSetUP(i)(2))
+            Call VsGain(OutSheetName, "Rise Time Gain", i, DataSetUP(i)(0), "Y", DataSetUP(i)(1), DataSetUP(i)(2))
+            Call VsGain(OutSheetName, "Noise Gain", i, DataSetUP(i)(0), "S", DataSetUP(i)(1), DataSetUP(i)(2))
+            Call VsGain(OutSheetName, "Jitter Gain", i, DataSetUP(i)(0), "AG", DataSetUP(i)(1), DataSetUP(i)(2))
+            Call VsGain(OutSheetName, "Time Resolution Gain", i, DataSetUP(i)(0), "AG", DataSetUP(i)(1), DataSetUP(i)(2))
         Next i
 End Sub
